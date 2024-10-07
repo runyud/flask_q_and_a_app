@@ -33,14 +33,14 @@ def index():
     db = get_db()
 
     db.execute('''select 
-                                      questions.id as question_id, 
-                                      questions.question_text, 
-                                      askers.name as asker_name, 
-                                      experts.name as expert_name 
-                                  from questions 
-                                  join users as askers on askers.id = questions.asked_by_id 
-                                  join users as experts on experts.id = questions.expert_id 
-                                  where questions.answer_text is not null''')
+                    questions.id as question_id, 
+                    questions.question_text, 
+                    askers.name as asker_name, 
+                    experts.name as expert_name 
+                from questions 
+                join users as askers on askers.id = questions.asked_by_id 
+                join users as experts on experts.id = questions.expert_id 
+                where questions.answer_text is not null''')
 
     questions_result = db.fetchall()
 
@@ -100,14 +100,14 @@ def question(question_id):
     db = get_db()
 
     db.execute('''select 
-                                     questions.question_text, 
-                                     questions.answer_text, 
-                                     askers.name as asker_name, 
-                                     experts.name as expert_name 
-                                 from questions 
-                                 join users as askers on askers.id = questions.asked_by_id 
-                                 join users as experts on experts.id = questions.expert_id 
-                                 where questions.id = %s''', (question_id, ))
+                    questions.question_text, 
+                    questions.answer_text, 
+                    askers.name as asker_name, 
+                    experts.name as expert_name 
+                from questions 
+                join users as askers on askers.id = questions.asked_by_id 
+                join users as experts on experts.id = questions.expert_id 
+                where questions.id = %s''', (question_id, ))
 
     question = db.fetchone()
 
@@ -167,9 +167,9 @@ def unanswered():
     db = get_db()
 
     db.execute('''select questions.id, questions.question_text, users.name 
-                                  from questions 
-                                  join users on users.id = questions.asked_by_id 
-                                  where questions.answer_text is null and questions.expert_id = %s''', (user['id'], ))
+                    from questions 
+                    join users on users.id = questions.asked_by_id 
+                    where questions.answer_text is null and questions.expert_id = %s''', (user['id'], ))
     
     questions = db.fetchall()
 
