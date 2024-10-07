@@ -1,12 +1,33 @@
 from flask import g
-import sqlite3
+import psycopg2
+from psycopg2.extras import DictCursor
 
 def connect_db():
-    sql = sqlite3.connect('/Users/runyuding/Desktop/flask_q_and_a_app/flask/questions.db')
-    sql.row_factory = sqlite3.Row
-    return sql
+    conn = psycopg2.connect('postgres://uc90u5rg996mn:p119e85cbe776b3868351aca1b09cf315cf5df92b714fc53a455556b9a6387ad6@cf980tnnkgv1bp.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d5038f53ri5b26',  cursor_factory=DictCursor)
+    conn.autocommit = True
+    sql = conn.cursor()
+    return conn, sql
 
 def get_db():
-    if not hasattr(g, 'sqlite3'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
+    db = connect_db()
+    if not hasattr(g, 'postgres_db_conn'):
+        g.postgres_db_conn = db[0]
+
+    if not hasattr(g, 'postgres_db_cur'):
+        g.postgres_db_cur = db[1]
+
+    return g.postgres_db_cur
+
+def init_db():
+    db = connect_db()
+
+    db[1].execute(open('schema.sql', 'r').read())
+    db[1].close()
+
+    db[0].close()
+
+def init_admin():
+    db = connect_db()
+    db[1].execute('update users set admin = True where name = %s', ('admin', ))
+    db[1].close()
+    db[0].close()
